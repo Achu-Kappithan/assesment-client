@@ -1,4 +1,4 @@
-<div class="min-h-screen" style="background:#f8fafc;">
+<div style="min-height:100vh; background:#f8fafc; font-family:'Inter',system-ui,sans-serif;">
 
   <!-- ── Top Navigation ── -->
   <nav style="background:#fff; border-bottom:1px solid #e2e8f0; position:sticky; top:0; z-index:100;">
@@ -18,7 +18,7 @@
       <button id="btn-add-client" (click)="openCreate()"
         style="display:flex; align-items:center; gap:6px; background:#2563eb; color:#fff;
                border:none; border-radius:8px; padding:8px 16px; font-size:13px; font-weight:600;
-               cursor:pointer; transition:background 0.15s; letter-spacing:0.01em;"
+               cursor:pointer; font-family:inherit;"
         onmouseover="this.style.background='#1d4ed8'" onmouseout="this.style.background='#2563eb'">
         <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
           <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
@@ -31,27 +31,56 @@
   <!-- ── Page Content ── -->
   <div style="max-width:1200px; margin:0 auto; padding:32px 24px;">
 
-    <!-- Page Header + Search -->
-    <div style="display:flex; align-items:flex-end; justify-content:space-between; margin-bottom:24px;">
+    <!-- Page Header + Controls -->
+    <div style="display:flex; align-items:flex-end; justify-content:space-between; margin-bottom:24px; gap:16px; flex-wrap:wrap;">
       <div>
         <h1 style="font-size:22px; font-weight:700; color:#0f172a; margin:0 0 4px; letter-spacing:-0.02em;">Clients</h1>
         <p style="font-size:13px; color:#64748b; margin:0;">
-          {{ filteredUsers.length }} of {{ users().length }} client{{ users().length !== 1 ? 's' : '' }}
+          {{ displayedUsers().length }} of {{ users().length }} client{{ users().length !== 1 ? 's' : '' }}
         </p>
       </div>
 
-      <!-- Search -->
-      <div style="position:relative; width:260px;">
-        <svg style="position:absolute; left:10px; top:50%; transform:translateY(-50%); color:#94a3b8;" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-          <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
-        </svg>
-        <input id="input-search" type="text" placeholder="Search clients…"
-          [value]="searchQuery()" (input)="onSearchChange($event)"
-          style="width:100%; border:1px solid #e2e8f0; border-radius:8px; padding:8px 12px 8px 32px;
-                 font-size:13px; color:#0f172a; background:#fff; outline:none; transition:border 0.15s;
-                 font-family:inherit;"
-          onfocus="this.style.borderColor='#2563eb'; this.style.boxShadow='0 0 0 3px rgba(37,99,235,0.1)'"
-          onblur="this.style.borderColor='#e2e8f0'; this.style.boxShadow='none'"/>
+      <!-- Search + Sort Controls -->
+      <div style="display:flex; align-items:center; gap:10px;">
+
+        <!-- Age Sort Button -->
+        <button (click)="toggleAgeSort()"
+          [style]="ageSortDir() ? 'background:#eff6ff; border-color:#bfdbfe; color:#2563eb;' : 'background:#fff; border-color:#e2e8f0; color:#475569;'"
+          style="display:inline-flex; align-items:center; gap:6px; border:1px solid; border-radius:8px;
+                 padding:8px 14px; font-size:12px; font-weight:600; cursor:pointer; font-family:inherit;
+                 transition:all 0.15s; white-space:nowrap;">
+          <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/>
+            <polyline points="3 6 4 5 5 6"/><polyline points="3 12 4 11 5 12"/><polyline points="3 18 4 17 5 18"/>
+          </svg>
+          Age
+          @if (ageSortDir() === 'asc') {
+            <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+              <polyline points="18 15 12 9 6 15"/>
+            </svg>
+            <span style="font-size:10px; opacity:0.7;">ASC</span>
+          } @else if (ageSortDir() === 'desc') {
+            <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+              <polyline points="6 9 12 15 18 9"/>
+            </svg>
+            <span style="font-size:10px; opacity:0.7;">DESC</span>
+          }
+        </button>
+
+        <!-- Search Input (debounced via component) -->
+        <div style="position:relative; width:260px;">
+          <svg style="position:absolute; left:10px; top:50%; transform:translateY(-50%); color:#94a3b8;"
+               width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+          </svg>
+          <input id="input-search" type="text" placeholder="Search clients… "
+            (input)="onSearchChange($event)"
+            style="width:100%; border:1px solid #e2e8f0; border-radius:8px; padding:8px 12px 8px 32px;
+                   font-size:13px; color:#0f172a; background:#fff; outline:none; transition:all 0.15s;
+                   font-family:inherit;"
+            onfocus="this.style.borderColor='#2563eb'; this.style.boxShadow='0 0 0 3px rgba(37,99,235,0.1)'"
+            onblur="this.style.borderColor='#e2e8f0'; this.style.boxShadow='none'"/>
+        </div>
       </div>
     </div>
 
@@ -74,7 +103,7 @@
         <table style="width:100%; border-collapse:collapse;">
           <thead>
             <tr style="background:#f8fafc; border-bottom:1px solid #e2e8f0;">
-              @for (h of ['Client','Email','Phone','Company','Status','Added','']; track h) {
+              @for (h of ['Client','Email','Phone','Age','Status','Added','']; track h) {
                 <th style="padding:11px 20px; text-align:left; font-size:11px; font-weight:600;
                            color:#94a3b8; letter-spacing:0.06em; text-transform:uppercase;">{{ h }}</th>
               }
@@ -105,7 +134,7 @@
       }
 
       <!-- ── Empty State ── -->
-      @if (!isLoading() && filteredUsers.length === 0 && !errorMessage()) {
+      @if (!isLoading() && displayedUsers().length === 0 && !errorMessage()) {
         <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; padding:80px 24px; text-align:center;">
           <div style="width:52px; height:52px; background:#eff6ff; border-radius:12px;
                       display:flex; align-items:center; justify-content:center; margin-bottom:16px;">
@@ -132,34 +161,51 @@
       }
 
       <!-- ── Data Table ── -->
-      @if (!isLoading() && filteredUsers.length > 0) {
+      @if (!isLoading() && displayedUsers().length > 0) {
         <table style="width:100%; border-collapse:collapse;">
           <thead>
             <tr style="background:#f8fafc; border-bottom:1px solid #e2e8f0;">
               <th style="padding:11px 20px; text-align:left; font-size:11px; font-weight:600; color:#94a3b8; letter-spacing:0.06em; text-transform:uppercase;">Client</th>
               <th style="padding:11px 20px; text-align:left; font-size:11px; font-weight:600; color:#94a3b8; letter-spacing:0.06em; text-transform:uppercase;">Email</th>
               <th style="padding:11px 20px; text-align:left; font-size:11px; font-weight:600; color:#94a3b8; letter-spacing:0.06em; text-transform:uppercase;">Phone</th>
-              <th style="padding:11px 20px; text-align:left; font-size:11px; font-weight:600; color:#94a3b8; letter-spacing:0.06em; text-transform:uppercase;">Company</th>
+
+              <!-- Age — sortable column header -->
+              <th style="padding:11px 20px; text-align:left;">
+                <button (click)="toggleAgeSort()"
+                  style="display:inline-flex; align-items:center; gap:4px; border:none; background:transparent;
+                         font-size:11px; font-weight:600; letter-spacing:0.06em; text-transform:uppercase;
+                         cursor:pointer; padding:0; font-family:inherit;"
+                  [style.color]="ageSortDir() ? '#2563eb' : '#94a3b8'">
+                  Age
+                  @if (ageSortDir() === 'asc') {
+                    <svg width="10" height="10" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="18 15 12 9 6 15"/></svg>
+                  } @else if (ageSortDir() === 'desc') {
+                    <svg width="10" height="10" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+                  } @else {
+                    <svg width="10" height="10" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="opacity:0.4;">
+                      <polyline points="18 15 12 9 6 15"/><polyline points="6 9 12 15 18 9" style="opacity:0;"/>
+                    </svg>
+                  }
+                </button>
+              </th>
+
               <th style="padding:11px 20px; text-align:left; font-size:11px; font-weight:600; color:#94a3b8; letter-spacing:0.06em; text-transform:uppercase;">Status</th>
               <th style="padding:11px 20px; text-align:left; font-size:11px; font-weight:600; color:#94a3b8; letter-spacing:0.06em; text-transform:uppercase;">Added</th>
               <th style="padding:11px 20px;"></th>
             </tr>
           </thead>
           <tbody>
-            @for (user of filteredUsers; track user._id) {
-              <tr class="table-row" style="border-bottom:1px solid #f1f5f9;">
+            @for (user of displayedUsers(); track user._id) {
+              <tr class="table-row" style="border-bottom:1px solid #f1f5f9; cursor:pointer;"
+                  (click)="viewUser(user._id)">
 
-                <!-- Client -->
+                <!-- Client — click to open profile -->
                 <td style="padding:14px 20px;">
                   <div style="display:flex; align-items:center; gap:12px;">
                     <div style="width:36px; height:36px; border-radius:50%; background:#eff6ff;
                                 color:#2563eb; display:flex; align-items:center; justify-content:center;
                                 font-size:12px; font-weight:700; flex-shrink:0; letter-spacing:0.01em;">
                       {{ getInitials(user.name) }}
-                    </div>
-                    <div>
-                      <p style="margin:0; font-size:13px; font-weight:600; color:#0f172a;">{{ user.name }}</p>
-                      <p style="margin:2px 0 0; font-size:12px; color:#94a3b8;">{{ user.jobTitle || '—' }}</p>
                     </div>
                   </div>
                 </td>
@@ -170,8 +216,18 @@
                 <!-- Phone -->
                 <td style="padding:14px 20px; font-size:13px; color:#475569;">{{ user.phone || '—' }}</td>
 
-                <!-- Company -->
-                <td style="padding:14px 20px; font-size:13px; color:#475569;">{{ user.company || '—' }}</td>
+                <!-- Age -->
+                <td style="padding:14px 20px;">
+                  @if (user.age !== null && user.age !== undefined) {
+                    <span style="display:inline-flex; align-items:center; background:#f8fafc; border:1px solid #e2e8f0;
+                                 color:#374151; font-size:12px; font-weight:600; padding:2px 10px;
+                                 border-radius:6px; min-width:36px; justify-content:center;">
+                      {{ user.age }}
+                    </span>
+                  } @else {
+                    <span style="color:#94a3b8; font-size:13px;">—</span>
+                  }
+                </td>
 
                 <!-- Status -->
                 <td style="padding:14px 20px;">
@@ -191,8 +247,8 @@
                   {{ user.createdAt | date: 'dd MMM yyyy' }}
                 </td>
 
-                <!-- Actions -->
-                <td style="padding:14px 20px;">
+                <!-- Actions — stop propagation so row click doesn't fire -->
+                <td style="padding:14px 20px;" (click)="$event.stopPropagation()">
                   @if (deleteConfirmId() === user._id) {
                     <div style="display:flex; align-items:center; gap:8px;">
                       <span style="font-size:12px; color:#64748b;">Delete?</span>
@@ -207,6 +263,18 @@
                     </div>
                   } @else {
                     <div style="display:flex; align-items:center; gap:6px;">
+                      <button [id]="'btn-view-' + user._id" (click)="viewUser(user._id)"
+                        style="display:inline-flex; align-items:center; gap:5px; background:#fff;
+                               color:#475569; border:1px solid #e2e8f0; border-radius:6px;
+                               padding:5px 12px; font-size:12px; font-weight:600; cursor:pointer; font-family:inherit;"
+                        onmouseover="this.style.background='#f8fafc'; this.style.borderColor='#cbd5e1'"
+                        onmouseout="this.style.background='#fff'; this.style.borderColor='#e2e8f0'">
+                        <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                          <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                          <circle cx="12" cy="12" r="3"/>
+                        </svg>
+                        View
+                      </button>
                       <button [id]="'btn-edit-' + user._id" (click)="openUpdate(user)"
                         style="display:inline-flex; align-items:center; gap:5px; background:#fff;
                                color:#2563eb; border:1px solid #bfdbfe; border-radius:6px;
@@ -225,8 +293,7 @@
                         onmouseover="this.style.background='#fef2f2'" onmouseout="this.style.background='#fff'">
                         <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                           <polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/>
-                          <path d="M10 11v6"/><path d="M14 11v6"/>
-                          <path d="M9 6V4h6v2"/>
+                          <path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/>
                         </svg>
                         Delete
                       </button>
@@ -239,10 +306,20 @@
         </table>
 
         <!-- Table Footer -->
-        <div style="padding:10px 20px; border-top:1px solid #f1f5f9; background:#f8fafc;">
+        <div style="padding:10px 20px; border-top:1px solid #f1f5f9; background:#f8fafc; display:flex; align-items:center; justify-content:space-between;">
           <p style="font-size:12px; color:#94a3b8; margin:0;">
-            Showing {{ filteredUsers.length }} client{{ filteredUsers.length !== 1 ? 's' : '' }}
+            Showing {{ displayedUsers().length }} client{{ displayedUsers().length !== 1 ? 's' : '' }}
           </p>
+          @if (ageSortDir()) {
+            <p style="font-size:12px; color:#2563eb; margin:0; display:flex; align-items:center; gap:4px;">
+              <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/>
+              </svg>
+              Sorted by age {{ ageSortDir() === 'asc' ? '(youngest first)' : '(oldest first)' }}
+              <button (click)="toggleAgeSort(); toggleAgeSort(); toggleAgeSort()"
+                style="background:transparent; border:none; color:#94a3b8; cursor:pointer; font-size:11px; padding:0 2px; font-family:inherit;">✕ Clear</button>
+            </p>
+          }
         </div>
       }
     </div>

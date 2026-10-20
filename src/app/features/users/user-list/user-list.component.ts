@@ -1,9 +1,15 @@
-import { Component, OnInit, signal, inject } from '@angular/core';
+import {
+  Component, OnInit, OnDestroy, signal, inject, computed,
+} from '@angular/core';
 import { DatePipe } from '@angular/common';
+import { Router } from '@angular/router';
+import { Subject, debounceTime, distinctUntilChanged, takeUntil } from 'rxjs';
 import { UserService } from '../../../core/services/user.service';
 import type { User } from '../../../core/interfaces/user.interface';
 import { UserCreateComponent } from '../user-create/user-create.component';
 import { UserUpdateComponent } from '../user-update/user-update.component';
+
+export type SortDirection = 'asc' | 'desc' | null;
 
 @Component({
   selector: 'app-user-list',
@@ -12,8 +18,13 @@ import { UserUpdateComponent } from '../user-update/user-update.component';
   templateUrl: './user-list.component.html',
   styleUrl: './user-list.component.css',
 })
-export class UserListComponent implements OnInit {
+export class UserListComponent implements OnInit, OnDestroy {
   private readonly userService = inject(UserService);
+  private readonly router = inject(Router);
+
+  private readonly destroy$ = new Subject<void>();
+
+  private readonly searchInput$ = new Subject<string>();
 
   readonly users = signal<User[]>([]);
   readonly isLoading = signal(false);
@@ -24,8 +35,44 @@ export class UserListComponent implements OnInit {
   readonly searchQuery = signal('');
   readonly deleteConfirmId = signal<string | null>(null);
 
+  readonly ageSortDir = signal<SortDirection>(null);
+
+  readonly displayedUsers = computed(() => {
+    const q = this.searchQuery().toLowerCase().trim();
+    const dir = this.ageSortDir();
+
+    // 1. Filter
+    let list = this.users().filter((u) => {
+      if (!q) return true;
+      return (
+        u.name.toLowerCase().includes(q) ||
+        u.email.toLowerCase().includes(q) ||
+        String(u.age ?? '').includes(q)
+      );
+    });
+
+    if (dir) {
+      list = [...list].sort((a, b) => {
+        const ageA = a.age ?? -1;
+        const ageB = b.age ?? -1;
+        return dir === 'asc' ? ageA - ageB : ageB - ageA;
+      });
+    }
+
+    return list;
+  });
+
   ngOnInit(): void {
+    this.searchInput$
+      .pipe(debounceTime(350), distinctUntilChanged(), takeUntil(this.destroy$))
+      .subscribe((value) => this.searchQuery.set(value));
+
     this.loadUsers();
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   loadUsers(): void {
@@ -43,16 +90,19 @@ export class UserListComponent implements OnInit {
     });
   }
 
-  get filteredUsers(): User[] {
-    const q = this.searchQuery().toLowerCase().trim();
-    if (!q) return this.users();
-    return this.users().filter(
-      (u) =>
-        u.name.toLowerCase().includes(q) ||
-        u.email.toLowerCase().includes(q) ||
-        (u.company ?? '').toLowerCase().includes(q) ||
-        (u.jobTitle ?? '').toLowerCase().includes(q)
-    );
+  onSearchChange(event: Event): void {
+    this.searchInput$.next((event.target as HTMLInputElement).value);
+  }
+
+  toggleAgeSort(): void {
+    const current = this.ageSortDir();
+    if (current === null) this.ageSortDir.set('asc');
+    else if (current === 'asc') this.ageSortDir.set('desc');
+    else this.ageSortDir.set(null);
+  }
+
+  viewUser(id: string): void {
+    this.router.navigate(['/users', id]);
   }
 
   openCreate(): void {
@@ -109,9 +159,5 @@ export class UserListComponent implements OnInit {
       .join('')
       .toUpperCase()
       .slice(0, 2);
-  }
-
-  onSearchChange(event: Event): void {
-    this.searchQuery.set((event.target as HTMLInputElement).value);
   }
 }

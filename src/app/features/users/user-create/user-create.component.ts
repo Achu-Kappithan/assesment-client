@@ -3,11 +3,7 @@ import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angula
 import { UserService } from '../../../core/services/user.service';
 import type { CreateUserDto } from '../../../core/interfaces/user.interface';
 
-/**
- * UserCreateComponent — handles only new client creation.
- * Emits 'created' on success, 'cancelled' on dismiss.
- * All HTTP calls delegated to UserService.
- */
+
 @Component({
   selector: 'app-user-create',
   standalone: true,
@@ -29,8 +25,7 @@ export class UserCreateComponent {
     name:     ['', [Validators.required, Validators.minLength(2), Validators.maxLength(80)]],
     email:    ['', [Validators.required, Validators.email]],
     phone:    ['', [Validators.pattern(/^[+\d\s\-(). ]{7,20}$/)]],
-    company:  ['', [Validators.maxLength(100)]],
-    jobTitle: ['', [Validators.maxLength(100)]],
+    age:      [null, [Validators.min(0), Validators.max(120)]],
     address:  ['', [Validators.maxLength(200)]],
   });
 
@@ -53,8 +48,7 @@ export class UserCreateComponent {
       name:     this.form.value.name.trim(),
       email:    this.form.value.email.trim(),
       phone:    this.form.value.phone?.trim()    || undefined,
-      company:  this.form.value.company?.trim()  || undefined,
-      jobTitle: this.form.value.jobTitle?.trim() || undefined,
+      age:      this.form.value.age != null ? Number(this.form.value.age) : undefined,
       address:  this.form.value.address?.trim()  || undefined,
     };
 

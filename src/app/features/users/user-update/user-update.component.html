@@ -81,7 +81,7 @@
         </div>
       </div>
 
-      <!-- Phone + Company -->
+      <!-- Phone + Age -->
       <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
         <div>
           <label style="display:block; font-size:12px; font-weight:600; color:#374151; margin-bottom:6px;" for="u-phone">Phone</label>
@@ -92,24 +92,20 @@
             onblur="this.style.borderColor='#e2e8f0'; this.style.boxShadow='none'"/>
         </div>
         <div>
-          <label style="display:block; font-size:12px; font-weight:600; color:#374151; margin-bottom:6px;" for="u-company">Company</label>
-          <input id="u-company" type="text" formControlName="company"
+          <label style="display:block; font-size:12px; font-weight:600; color:#374151; margin-bottom:6px;" for="u-age">Age</label>
+          <input id="u-age" type="number" formControlName="age" placeholder="e.g. 28" min="0" max="120"
+            [style]="isInvalid('age') ? 'border-color:#f87171;' : ''"
             style="width:100%; border:1px solid #e2e8f0; border-radius:8px; padding:8px 12px; font-size:13px;
                    color:#0f172a; font-family:inherit; outline:none; background:#fff; box-sizing:border-box;"
             onfocus="this.style.borderColor='#2563eb'; this.style.boxShadow='0 0 0 3px rgba(37,99,235,0.1)'"
             onblur="this.style.borderColor='#e2e8f0'; this.style.boxShadow='none'"/>
+          @if (isInvalid('age')) {
+            <p style="margin:5px 0 0; font-size:11px; color:#ef4444;">Age must be between 0 and 120.</p>
+          }
         </div>
       </div>
 
-      <!-- Job Title -->
-      <div>
-        <label style="display:block; font-size:12px; font-weight:600; color:#374151; margin-bottom:6px;" for="u-jobtitle">Job Title</label>
-        <input id="u-jobtitle" type="text" formControlName="jobTitle"
-          style="width:100%; border:1px solid #e2e8f0; border-radius:8px; padding:8px 12px; font-size:13px;
-                 color:#0f172a; font-family:inherit; outline:none; background:#fff; box-sizing:border-box;"
-          onfocus="this.style.borderColor='#2563eb'; this.style.boxShadow='0 0 0 3px rgba(37,99,235,0.1)'"
-          onblur="this.style.borderColor='#e2e8f0'; this.style.boxShadow='none'"/>
-      </div>
+
 
       <!-- Address -->
       <div>

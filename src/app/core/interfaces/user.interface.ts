@@ -4,8 +4,7 @@ export interface User {
   name: string;
   email: string;
   phone: string;
-  company: string;
-  jobTitle: string;
+  age: number | null;
   address: string;
   isActive: boolean;
   createdAt: string;
@@ -16,8 +15,7 @@ export interface CreateUserDto {
   name: string;
   email: string;
   phone?: string;
-  company?: string;
-  jobTitle?: string;
+  age?: number;
   address?: string;
 }
 
@@ -25,8 +23,7 @@ export interface UpdateUserDto {
   name?: string;
   email?: string;
   phone?: string;
-  company?: string;
-  jobTitle?: string;
+  age?: number;
   address?: string;
   isActive?: boolean;
 }

@@ -31,7 +31,7 @@ export class UserUpdateComponent implements OnInit {
     name:     ['', [Validators.required, Validators.minLength(2), Validators.maxLength(80)]],
     email:    ['', [Validators.required, Validators.email]],
     phone:    ['', [Validators.pattern(/^[+\d\s\-(). ]{7,20}$/)]],
-    company:  ['', [Validators.maxLength(100)]],
+    age:      [null, [Validators.min(0), Validators.max(120)]],
     jobTitle: ['', [Validators.maxLength(100)]],
     address:  ['', [Validators.maxLength(200)]],
     isActive: [true],
@@ -43,8 +43,7 @@ export class UserUpdateComponent implements OnInit {
       name:     u.name,
       email:    u.email,
       phone:    u.phone    ?? '',
-      company:  u.company  ?? '',
-      jobTitle: u.jobTitle ?? '',
+      age:      u.age      ?? null,
       address:  u.address  ?? '',
       isActive: u.isActive,
     });
@@ -65,8 +64,7 @@ export class UserUpdateComponent implements OnInit {
       name:     this.form.value.name.trim(),
       email:    this.form.value.email.trim(),
       phone:    this.form.value.phone?.trim()    ?? '',
-      company:  this.form.value.company?.trim()  ?? '',
-      jobTitle: this.form.value.jobTitle?.trim() ?? '',
+      age:      this.form.value.age != null ? Number(this.form.value.age) : undefined,
       address:  this.form.value.address?.trim()  ?? '',
       isActive: this.form.value.isActive,
     };

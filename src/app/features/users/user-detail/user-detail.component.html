@@ -1,0 +1,300 @@
+<div style="min-height:100vh; background:#f8fafc; font-family:'Inter',system-ui,sans-serif;">
+
+  <!-- ── Top Bar ── -->
+  <nav style="background:#fff; border-bottom:1px solid #e2e8f0; position:sticky; top:0; z-index:100;">
+    <div style="max-width:1000px; margin:0 auto; padding:0 24px; height:56px; display:flex; align-items:center; gap:12px;">
+      <button (click)="goBack()"
+        style="display:flex; align-items:center; gap:6px; background:transparent; border:none;
+               color:#64748b; font-size:13px; font-weight:500; cursor:pointer; padding:6px 10px;
+               border-radius:6px; font-family:inherit;"
+        onmouseover="this.style.background='#f1f5f9'; this.style.color='#0f172a'"
+        onmouseout="this.style.background='transparent'; this.style.color='#64748b'">
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <polyline points="15 18 9 12 15 6"/>
+        </svg>
+        Back to Clients
+      </button>
+      <span style="color:#e2e8f0;">/</span>
+      <span style="font-size:13px; color:#0f172a; font-weight:600;">
+        {{ user()?.name ?? 'Client Profile' }}
+      </span>
+    </div>
+  </nav>
+
+  <div style="max-width:1000px; margin:0 auto; padding:32px 24px;">
+
+    <!-- ── Error State ── -->
+    @if (errorMessage()) {
+      <div style="background:#fef2f2; border:1px solid #fecaca; color:#dc2626; padding:16px 20px;
+                  border-radius:10px; font-size:14px; display:flex; align-items:center; gap:10px;">
+        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+        </svg>
+        {{ errorMessage() }}
+      </div>
+    }
+
+    <!-- ── Skeleton Loader ── -->
+    @if (isLoading()) {
+      <div style="display:flex; flex-direction:column; gap:20px;">
+        <!-- Header card skeleton -->
+        <div style="background:#fff; border:1px solid #e2e8f0; border-radius:12px; padding:32px; display:flex; align-items:center; gap:24px;">
+          <div style="width:80px; height:80px; border-radius:50%; background:#f1f5f9;" class="skeleton"></div>
+          <div style="display:flex; flex-direction:column; gap:10px; flex:1;">
+            <div style="height:22px; width:180px; background:#f1f5f9; border-radius:6px;" class="skeleton"></div>
+            <div style="height:14px; width:130px; background:#f1f5f9; border-radius:6px;" class="skeleton"></div>
+            <div style="height:14px; width:200px; background:#f1f5f9; border-radius:6px;" class="skeleton"></div>
+          </div>
+        </div>
+        <!-- Info cards skeleton -->
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+          @for (i of [1,2,3,4]; track i) {
+            <div style="background:#fff; border:1px solid #e2e8f0; border-radius:12px; padding:20px;" class="skeleton-card">
+              <div style="height:12px; width:80px; background:#f1f5f9; border-radius:4px; margin-bottom:10px;" class="skeleton"></div>
+              <div style="height:16px; width:140px; background:#f1f5f9; border-radius:4px;" class="skeleton"></div>
+            </div>
+          }
+        </div>
+      </div>
+    }
+
+    <!-- ── Profile Content ── -->
+    @if (!isLoading() && user()) {
+      <div style="display:flex; flex-direction:column; gap:20px;">
+
+        <!-- ── Profile Header Card ── -->
+        <div style="background:#fff; border:1px solid #e2e8f0; border-radius:12px;
+                    box-shadow:0 1px 3px rgba(0,0,0,0.04); overflow:hidden;">
+
+          <!-- Accent strip -->
+          <div style="height:6px; background:linear-gradient(90deg, #2563eb, #6366f1);"></div>
+
+          <div style="padding:28px 32px; display:flex; align-items:center; justify-content:space-between; gap:20px; flex-wrap:wrap;">
+            <!-- Avatar + Name -->
+            <div style="display:flex; align-items:center; gap:20px;">
+              <!-- Avatar -->
+              <div style="width:72px; height:72px; border-radius:50%; background:#eff6ff;
+                          display:flex; align-items:center; justify-content:center;
+                          font-size:22px; font-weight:700; color:#2563eb;
+                          border:3px solid #bfdbfe; flex-shrink:0; letter-spacing:0.02em;">
+                {{ initials() }}
+              </div>
+
+              <div>
+                <h1 style="margin:0 0 4px; font-size:20px; font-weight:700; color:#0f172a; letter-spacing:-0.02em;">
+                  {{ user()!.name }}
+                </h1>
+
+                <!-- Status badge -->
+                <span [style]="user()!.isActive
+                  ? 'background:#f0fdf4; color:#15803d; border:1px solid #bbf7d0;'
+                  : 'background:#fef2f2; color:#dc2626; border:1px solid #fecaca;'"
+                  style="display:inline-flex; align-items:center; gap:5px; font-size:11px;
+                         font-weight:600; padding:3px 10px; border-radius:20px; letter-spacing:0.03em;">
+                  <span [style]="user()!.isActive ? 'background:#22c55e' : 'background:#ef4444'"
+                    style="width:6px; height:6px; border-radius:50%; display:inline-block;"></span>
+                  {{ user()!.isActive ? 'Active' : 'Inactive' }}
+                </span>
+              </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div style="display:flex; gap:10px; flex-shrink:0;">
+              <button (click)="openEdit()"
+                style="display:inline-flex; align-items:center; gap:7px; background:#fff;
+                       color:#2563eb; border:1px solid #bfdbfe; border-radius:8px;
+                       padding:9px 18px; font-size:13px; font-weight:600; cursor:pointer; font-family:inherit;"
+                onmouseover="this.style.background='#eff6ff'" onmouseout="this.style.background='#fff'">
+                <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                  <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                </svg>
+                Edit Profile
+              </button>
+              <button (click)="promptDelete()"
+                style="display:inline-flex; align-items:center; gap:7px; background:#fff;
+                       color:#dc2626; border:1px solid #fecaca; border-radius:8px;
+                       padding:9px 18px; font-size:13px; font-weight:600; cursor:pointer; font-family:inherit;"
+                onmouseover="this.style.background='#fef2f2'" onmouseout="this.style.background='#fff'">
+                <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <polyline points="3 6 5 6 21 6"/>
+                  <path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/>
+                  <path d="M9 6V4h6v2"/>
+                </svg>
+                Delete
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── Contact & Info Grid ── -->
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+
+          <!-- Email -->
+          <div class="info-card" style="background:#fff; border:1px solid #e2e8f0; border-radius:12px;
+                                        padding:20px 22px; box-shadow:0 1px 3px rgba(0,0,0,0.03);">
+            <div style="display:flex; align-items:center; gap:10px; margin-bottom:12px;">
+              <div style="width:32px; height:32px; border-radius:8px; background:#eff6ff;
+                          display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+                <svg width="15" height="15" fill="none" stroke="#2563eb" stroke-width="2" viewBox="0 0 24 24">
+                  <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                  <polyline points="22,6 12,13 2,6"/>
+                </svg>
+              </div>
+              <span style="font-size:11px; font-weight:600; color:#94a3b8; letter-spacing:0.06em; text-transform:uppercase;">Email Address</span>
+            </div>
+            <p style="margin:0; font-size:14px; font-weight:500; color:#0f172a; word-break:break-all;">
+              {{ user()!.email }}
+            </p>
+          </div>
+
+          <!-- Phone -->
+          <div class="info-card" style="background:#fff; border:1px solid #e2e8f0; border-radius:12px;
+                                        padding:20px 22px; box-shadow:0 1px 3px rgba(0,0,0,0.03);">
+            <div style="display:flex; align-items:center; gap:10px; margin-bottom:12px;">
+              <div style="width:32px; height:32px; border-radius:8px; background:#f0fdf4;
+                          display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+                <svg width="15" height="15" fill="none" stroke="#16a34a" stroke-width="2" viewBox="0 0 24 24">
+                  <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.38 2 2 0 0 1 3.6 1.18h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.76a16 16 0 0 0 6.29 6.29l.96-.96a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/>
+                </svg>
+              </div>
+              <span style="font-size:11px; font-weight:600; color:#94a3b8; letter-spacing:0.06em; text-transform:uppercase;">Phone</span>
+            </div>
+            <p style="margin:0; font-size:14px; font-weight:500; color:#0f172a;">
+              {{ user()!.phone || '—' }}
+            </p>
+          </div>
+
+          <!-- Age -->
+          <div class="info-card" style="background:#fff; border:1px solid #e2e8f0; border-radius:12px;
+                                        padding:20px 22px; box-shadow:0 1px 3px rgba(0,0,0,0.03);">
+            <div style="display:flex; align-items:center; gap:10px; margin-bottom:12px;">
+              <div style="width:32px; height:32px; border-radius:8px; background:#faf5ff;
+                          display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+                <svg width="15" height="15" fill="none" stroke="#7c3aed" stroke-width="2" viewBox="0 0 24 24">
+                  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                  <line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/>
+                  <line x1="3" y1="10" x2="21" y2="10"/>
+                </svg>
+              </div>
+              <span style="font-size:11px; font-weight:600; color:#94a3b8; letter-spacing:0.06em; text-transform:uppercase;">Age</span>
+            </div>
+            @if (user()!.age !== null && user()!.age !== undefined) {
+              <div style="display:flex; align-items:baseline; gap:6px;">
+                <p style="margin:0; font-size:22px; font-weight:700; color:#0f172a; letter-spacing:-0.01em;">{{ user()!.age }}</p>
+                <p style="margin:0; font-size:13px; color:#94a3b8;">years old</p>
+              </div>
+            } @else {
+              <p style="margin:0; font-size:14px; font-weight:500; color:#94a3b8;">—</p>
+            }
+          </div>
+
+
+          <!-- Address -->
+          <div class="info-card" style="background:#fff; border:1px solid #e2e8f0; border-radius:12px;
+                                        padding:20px 22px; box-shadow:0 1px 3px rgba(0,0,0,0.03);">
+            <div style="display:flex; align-items:center; gap:10px; margin-bottom:12px;">
+              <div style="width:32px; height:32px; border-radius:8px; background:#fff7ed;
+                          display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+                <svg width="15" height="15" fill="none" stroke="#ea580c" stroke-width="2" viewBox="0 0 24 24">
+                  <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+                  <circle cx="12" cy="10" r="3"/>
+                </svg>
+              </div>
+              <span style="font-size:11px; font-weight:600; color:#94a3b8; letter-spacing:0.06em; text-transform:uppercase;">Address</span>
+            </div>
+            <p style="margin:0; font-size:14px; font-weight:500; color:#0f172a;">{{ user()!.address || '—' }}</p>
+          </div>
+        </div>
+
+        <!-- ── Account Info ── -->
+        <div style="background:#fff; border:1px solid #e2e8f0; border-radius:12px;
+                    padding:20px 22px; box-shadow:0 1px 3px rgba(0,0,0,0.03);">
+          <p style="margin:0 0 16px; font-size:12px; font-weight:600; color:#94a3b8;
+                    letter-spacing:0.06em; text-transform:uppercase;">Account Info</p>
+          <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:16px;">
+
+            <div>
+              <p style="margin:0 0 4px; font-size:11px; color:#94a3b8; font-weight:500;">Client ID</p>
+              <p style="margin:0; font-size:12px; font-weight:600; color:#475569;
+                        font-family:'SF Mono','Fira Mono',monospace; word-break:break-all;">
+                {{ user()!._id }}
+              </p>
+            </div>
+
+            <div>
+              <p style="margin:0 0 4px; font-size:11px; color:#94a3b8; font-weight:500;">Member Since</p>
+              <p style="margin:0; font-size:13px; font-weight:600; color:#0f172a;">
+                {{ user()!.createdAt | date: 'dd MMM yyyy' }}
+              </p>
+            </div>
+
+            <div>
+              <p style="margin:0 0 4px; font-size:11px; color:#94a3b8; font-weight:500;">Last Updated</p>
+              <p style="margin:0; font-size:13px; font-weight:600; color:#0f172a;">
+                {{ user()!.updatedAt | date: 'dd MMM yyyy, h:mm a' }}
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    }
+  </div>
+
+  <!-- ── Edit Modal ── -->
+  @if (showEditModal() && user()) {
+    <app-user-update [user]="user()!" (updated)="onUserUpdated()" (cancelled)="onEditCancelled()" />
+  }
+
+  <!-- ── Delete Confirmation Modal ── -->
+  @if (showDeleteConfirm()) {
+    <div style="position:fixed; inset:0; z-index:200; display:flex; align-items:center; justify-content:center;
+                padding:16px; background:rgba(15,23,42,0.45); backdrop-filter:blur(2px);">
+      <div class="confirm-panel" style="width:100%; max-width:420px; background:#fff; border-radius:14px;
+                  box-shadow:0 20px 60px rgba(0,0,0,0.12); padding:28px; text-align:center;">
+
+        <!-- Icon -->
+        <div style="width:52px; height:52px; background:#fef2f2; border-radius:50%; margin:0 auto 16px;
+                    display:flex; align-items:center; justify-content:center;">
+          <svg width="22" height="22" fill="none" stroke="#dc2626" stroke-width="2" viewBox="0 0 24 24">
+            <polyline points="3 6 5 6 21 6"/>
+            <path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/>
+            <path d="M9 6V4h6v2"/>
+          </svg>
+        </div>
+
+        <h2 style="margin:0 0 8px; font-size:16px; font-weight:700; color:#0f172a; letter-spacing:-0.01em;">Delete Client</h2>
+        <p style="margin:0 0 24px; font-size:13px; color:#64748b; line-height:1.6;">
+          Are you sure you want to delete
+          <strong style="color:#0f172a;">{{ user()?.name }}</strong>?
+          This action cannot be undone.
+        </p>
+
+        <div style="display:flex; gap:10px;">
+          <button (click)="cancelDelete()" [disabled]="isDeleting()"
+            style="flex:1; background:#fff; color:#475569; border:1px solid #e2e8f0; border-radius:8px;
+                   padding:10px; font-size:13px; font-weight:600; cursor:pointer; font-family:inherit;"
+            onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='#fff'">
+            Cancel
+          </button>
+          <button (click)="confirmDelete()" [disabled]="isDeleting()"
+            style="flex:1; display:flex; align-items:center; justify-content:center; gap:6px;
+                   background:#dc2626; color:#fff; border:none; border-radius:8px;
+                   padding:10px; font-size:13px; font-weight:600; cursor:pointer; font-family:inherit;"
+            [style.opacity]="isDeleting() ? '0.65' : '1'"
+            onmouseover="this.style.background='#b91c1c'" onmouseout="this.style.background='#dc2626'">
+            @if (isDeleting()) {
+              <svg style="animation:spin 0.8s linear infinite;" width="14" height="14" fill="none" viewBox="0 0 24 24">
+                <circle style="opacity:0.25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
+                <path style="opacity:0.75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
+              </svg>
+              Deleting…
+            } @else {
+              Yes, Delete
+            }
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+</div>

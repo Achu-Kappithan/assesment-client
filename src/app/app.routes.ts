@@ -14,7 +14,15 @@ export const routes: Routes = [
       ),
   },
   {
+    path: 'users/:id',
+    loadComponent: () =>
+      import('./features/users/user-detail/user-detail.component').then(
+        (m) => m.UserDetailComponent
+      ),
+  },
+  {
     path: '**',
     redirectTo: 'users',
   },
 ];
+
