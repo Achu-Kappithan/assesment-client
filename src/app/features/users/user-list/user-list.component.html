@@ -1,0 +1,258 @@
+<div class="min-h-screen" style="background:#f8fafc;">
+
+  <!-- ── Top Navigation ── -->
+  <nav style="background:#fff; border-bottom:1px solid #e2e8f0; position:sticky; top:0; z-index:100;">
+    <div style="max-width:1200px; margin:0 auto; padding:0 24px; height:60px; display:flex; align-items:center; justify-content:space-between;">
+      <!-- Brand -->
+      <div style="display:flex; align-items:center; gap:10px;">
+        <div style="width:32px; height:32px; background:#2563eb; border-radius:8px; display:flex; align-items:center; justify-content:center;">
+          <svg width="18" height="18" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/>
+            <path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+          </svg>
+        </div>
+        <span style="font-size:15px; font-weight:600; color:#0f172a; letter-spacing:-0.01em;">ClientManager</span>
+      </div>
+
+      <!-- Add button -->
+      <button id="btn-add-client" (click)="openCreate()"
+        style="display:flex; align-items:center; gap:6px; background:#2563eb; color:#fff;
+               border:none; border-radius:8px; padding:8px 16px; font-size:13px; font-weight:600;
+               cursor:pointer; transition:background 0.15s; letter-spacing:0.01em;"
+        onmouseover="this.style.background='#1d4ed8'" onmouseout="this.style.background='#2563eb'">
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+          <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+        </svg>
+        Add Client
+      </button>
+    </div>
+  </nav>
+
+  <!-- ── Page Content ── -->
+  <div style="max-width:1200px; margin:0 auto; padding:32px 24px;">
+
+    <!-- Page Header + Search -->
+    <div style="display:flex; align-items:flex-end; justify-content:space-between; margin-bottom:24px;">
+      <div>
+        <h1 style="font-size:22px; font-weight:700; color:#0f172a; margin:0 0 4px; letter-spacing:-0.02em;">Clients</h1>
+        <p style="font-size:13px; color:#64748b; margin:0;">
+          {{ filteredUsers.length }} of {{ users().length }} client{{ users().length !== 1 ? 's' : '' }}
+        </p>
+      </div>
+
+      <!-- Search -->
+      <div style="position:relative; width:260px;">
+        <svg style="position:absolute; left:10px; top:50%; transform:translateY(-50%); color:#94a3b8;" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+        </svg>
+        <input id="input-search" type="text" placeholder="Search clients…"
+          [value]="searchQuery()" (input)="onSearchChange($event)"
+          style="width:100%; border:1px solid #e2e8f0; border-radius:8px; padding:8px 12px 8px 32px;
+                 font-size:13px; color:#0f172a; background:#fff; outline:none; transition:border 0.15s;
+                 font-family:inherit;"
+          onfocus="this.style.borderColor='#2563eb'; this.style.boxShadow='0 0 0 3px rgba(37,99,235,0.1)'"
+          onblur="this.style.borderColor='#e2e8f0'; this.style.boxShadow='none'"/>
+      </div>
+    </div>
+
+    <!-- Error Banner -->
+    @if (errorMessage()) {
+      <div style="display:flex; align-items:center; gap:10px; background:#fef2f2; border:1px solid #fecaca;
+                  color:#dc2626; padding:12px 16px; border-radius:8px; font-size:13px; margin-bottom:20px;">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+        </svg>
+        {{ errorMessage() }}
+      </div>
+    }
+
+    <!-- Table Card -->
+    <div style="background:#fff; border:1px solid #e2e8f0; border-radius:12px; overflow:hidden; box-shadow:0 1px 3px rgba(0,0,0,0.04);">
+
+      <!-- ── Loading Skeleton ── -->
+      @if (isLoading()) {
+        <table style="width:100%; border-collapse:collapse;">
+          <thead>
+            <tr style="background:#f8fafc; border-bottom:1px solid #e2e8f0;">
+              @for (h of ['Client','Email','Phone','Company','Status','Added','']; track h) {
+                <th style="padding:11px 20px; text-align:left; font-size:11px; font-weight:600;
+                           color:#94a3b8; letter-spacing:0.06em; text-transform:uppercase;">{{ h }}</th>
+              }
+            </tr>
+          </thead>
+          <tbody>
+            @for (i of [1,2,3,4,5]; track i) {
+              <tr style="border-bottom:1px solid #f1f5f9;">
+                <td style="padding:14px 20px;">
+                  <div style="display:flex; align-items:center; gap:12px;">
+                    <div style="width:36px; height:36px; border-radius:50%; background:#f1f5f9;"></div>
+                    <div>
+                      <div style="height:13px; width:100px; background:#f1f5f9; border-radius:4px; margin-bottom:6px;"></div>
+                      <div style="height:11px; width:70px; background:#f8fafc; border-radius:4px;"></div>
+                    </div>
+                  </div>
+                </td>
+                @for (j of [1,2,3]; track j) {
+                  <td style="padding:14px 20px;"><div style="height:13px; width:90px; background:#f1f5f9; border-radius:4px;"></div></td>
+                }
+                <td style="padding:14px 20px;"><div style="height:22px; width:60px; background:#f1f5f9; border-radius:20px;"></div></td>
+                <td style="padding:14px 20px;"><div style="height:13px; width:70px; background:#f1f5f9; border-radius:4px;"></div></td>
+                <td style="padding:14px 20px;"><div style="height:28px; width:90px; background:#f1f5f9; border-radius:6px;"></div></td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      }
+
+      <!-- ── Empty State ── -->
+      @if (!isLoading() && filteredUsers.length === 0 && !errorMessage()) {
+        <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; padding:80px 24px; text-align:center;">
+          <div style="width:52px; height:52px; background:#eff6ff; border-radius:12px;
+                      display:flex; align-items:center; justify-content:center; margin-bottom:16px;">
+            <svg width="24" height="24" fill="none" stroke="#2563eb" stroke-width="1.5" viewBox="0 0 24 24">
+              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/>
+              <path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+            </svg>
+          </div>
+          <p style="font-size:15px; font-weight:600; color:#0f172a; margin:0 0 6px;">
+            {{ searchQuery() ? 'No clients found' : 'No clients yet' }}
+          </p>
+          <p style="font-size:13px; color:#94a3b8; margin:0 0 24px;">
+            {{ searchQuery() ? 'Try a different search term.' : 'Add your first client to get started.' }}
+          </p>
+          @if (!searchQuery()) {
+            <button (click)="openCreate()"
+              style="background:#2563eb; color:#fff; border:none; border-radius:8px; padding:9px 20px;
+                     font-size:13px; font-weight:600; cursor:pointer; font-family:inherit;"
+              onmouseover="this.style.background='#1d4ed8'" onmouseout="this.style.background='#2563eb'">
+              Add First Client
+            </button>
+          }
+        </div>
+      }
+
+      <!-- ── Data Table ── -->
+      @if (!isLoading() && filteredUsers.length > 0) {
+        <table style="width:100%; border-collapse:collapse;">
+          <thead>
+            <tr style="background:#f8fafc; border-bottom:1px solid #e2e8f0;">
+              <th style="padding:11px 20px; text-align:left; font-size:11px; font-weight:600; color:#94a3b8; letter-spacing:0.06em; text-transform:uppercase;">Client</th>
+              <th style="padding:11px 20px; text-align:left; font-size:11px; font-weight:600; color:#94a3b8; letter-spacing:0.06em; text-transform:uppercase;">Email</th>
+              <th style="padding:11px 20px; text-align:left; font-size:11px; font-weight:600; color:#94a3b8; letter-spacing:0.06em; text-transform:uppercase;">Phone</th>
+              <th style="padding:11px 20px; text-align:left; font-size:11px; font-weight:600; color:#94a3b8; letter-spacing:0.06em; text-transform:uppercase;">Company</th>
+              <th style="padding:11px 20px; text-align:left; font-size:11px; font-weight:600; color:#94a3b8; letter-spacing:0.06em; text-transform:uppercase;">Status</th>
+              <th style="padding:11px 20px; text-align:left; font-size:11px; font-weight:600; color:#94a3b8; letter-spacing:0.06em; text-transform:uppercase;">Added</th>
+              <th style="padding:11px 20px;"></th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (user of filteredUsers; track user._id) {
+              <tr class="table-row" style="border-bottom:1px solid #f1f5f9;">
+
+                <!-- Client -->
+                <td style="padding:14px 20px;">
+                  <div style="display:flex; align-items:center; gap:12px;">
+                    <div style="width:36px; height:36px; border-radius:50%; background:#eff6ff;
+                                color:#2563eb; display:flex; align-items:center; justify-content:center;
+                                font-size:12px; font-weight:700; flex-shrink:0; letter-spacing:0.01em;">
+                      {{ getInitials(user.name) }}
+                    </div>
+                    <div>
+                      <p style="margin:0; font-size:13px; font-weight:600; color:#0f172a;">{{ user.name }}</p>
+                      <p style="margin:2px 0 0; font-size:12px; color:#94a3b8;">{{ user.jobTitle || '—' }}</p>
+                    </div>
+                  </div>
+                </td>
+
+                <!-- Email -->
+                <td style="padding:14px 20px; font-size:13px; color:#475569;">{{ user.email }}</td>
+
+                <!-- Phone -->
+                <td style="padding:14px 20px; font-size:13px; color:#475569;">{{ user.phone || '—' }}</td>
+
+                <!-- Company -->
+                <td style="padding:14px 20px; font-size:13px; color:#475569;">{{ user.company || '—' }}</td>
+
+                <!-- Status -->
+                <td style="padding:14px 20px;">
+                  <span [style]="user.isActive
+                    ? 'background:#f0fdf4; color:#15803d; border:1px solid #bbf7d0;'
+                    : 'background:#fef2f2; color:#dc2626; border:1px solid #fecaca;'"
+                    style="display:inline-flex; align-items:center; gap:5px; font-size:11px; font-weight:600;
+                           padding:3px 10px; border-radius:20px; letter-spacing:0.02em;">
+                    <span [style]="user.isActive ? 'background:#22c55e' : 'background:#ef4444'"
+                      style="width:6px; height:6px; border-radius:50%; display:inline-block;"></span>
+                    {{ user.isActive ? 'Active' : 'Inactive' }}
+                  </span>
+                </td>
+
+                <!-- Date -->
+                <td style="padding:14px 20px; font-size:12px; color:#94a3b8;">
+                  {{ user.createdAt | date: 'dd MMM yyyy' }}
+                </td>
+
+                <!-- Actions -->
+                <td style="padding:14px 20px;">
+                  @if (deleteConfirmId() === user._id) {
+                    <div style="display:flex; align-items:center; gap:8px;">
+                      <span style="font-size:12px; color:#64748b;">Delete?</span>
+                      <button (click)="deleteUser(user._id)" [id]="'btn-confirm-delete-' + user._id"
+                        style="background:#dc2626; color:#fff; border:none; border-radius:6px;
+                               padding:5px 12px; font-size:12px; font-weight:600; cursor:pointer; font-family:inherit;"
+                        onmouseover="this.style.background='#b91c1c'" onmouseout="this.style.background='#dc2626'">Yes</button>
+                      <button (click)="cancelDelete()"
+                        style="background:#fff; color:#64748b; border:1px solid #e2e8f0; border-radius:6px;
+                               padding:5px 12px; font-size:12px; font-weight:500; cursor:pointer; font-family:inherit;"
+                        onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='#fff'">No</button>
+                    </div>
+                  } @else {
+                    <div style="display:flex; align-items:center; gap:6px;">
+                      <button [id]="'btn-edit-' + user._id" (click)="openUpdate(user)"
+                        style="display:inline-flex; align-items:center; gap:5px; background:#fff;
+                               color:#2563eb; border:1px solid #bfdbfe; border-radius:6px;
+                               padding:5px 12px; font-size:12px; font-weight:600; cursor:pointer; font-family:inherit;"
+                        onmouseover="this.style.background='#eff6ff'" onmouseout="this.style.background='#fff'">
+                        <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                          <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                          <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                        </svg>
+                        Edit
+                      </button>
+                      <button [id]="'btn-delete-' + user._id" (click)="confirmDelete(user._id)"
+                        style="display:inline-flex; align-items:center; gap:5px; background:#fff;
+                               color:#dc2626; border:1px solid #fecaca; border-radius:6px;
+                               padding:5px 12px; font-size:12px; font-weight:600; cursor:pointer; font-family:inherit;"
+                        onmouseover="this.style.background='#fef2f2'" onmouseout="this.style.background='#fff'">
+                        <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                          <polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/>
+                          <path d="M10 11v6"/><path d="M14 11v6"/>
+                          <path d="M9 6V4h6v2"/>
+                        </svg>
+                        Delete
+                      </button>
+                    </div>
+                  }
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+
+        <!-- Table Footer -->
+        <div style="padding:10px 20px; border-top:1px solid #f1f5f9; background:#f8fafc;">
+          <p style="font-size:12px; color:#94a3b8; margin:0;">
+            Showing {{ filteredUsers.length }} client{{ filteredUsers.length !== 1 ? 's' : '' }}
+          </p>
+        </div>
+      }
+    </div>
+  </div>
+
+  <!-- Modals -->
+  @if (showCreateModal()) {
+    <app-user-create (created)="onUserCreated()" (cancelled)="closeModal()" />
+  }
+  @if (showUpdateModal() && selectedUser()) {
+    <app-user-update [user]="selectedUser()!" (updated)="onUserUpdated()" (cancelled)="closeModal()" />
+  }
+</div>
