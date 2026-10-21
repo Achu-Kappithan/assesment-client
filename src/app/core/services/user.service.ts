@@ -4,10 +4,7 @@ import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import type { User, CreateUserDto, UpdateUserDto } from '../interfaces/user.interface';
 
-/**
- * UserService — sole gateway for all backend HTTP calls.
- * No component accesses HttpClient directly.
- */
+
 @Injectable({ providedIn: 'root' })
 export class UserService {
   private readonly http = inject(HttpClient);

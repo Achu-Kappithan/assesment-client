@@ -2,6 +2,7 @@ import { Component, OnInit, signal, inject, computed } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { DatePipe } from '@angular/common';
 import { UserService } from '../../../core/services/user.service';
+import { NotificationService } from '../../../core/services/notification.service';
 import type { User } from '../../../core/interfaces/user.interface';
 import { UserUpdateComponent } from '../user-update/user-update.component';
 
@@ -13,16 +14,15 @@ import { UserUpdateComponent } from '../user-update/user-update.component';
   styleUrl: './user-detail.component.css',
 })
 export class UserDetailComponent implements OnInit {
-  private readonly route = inject(ActivatedRoute);
-  private readonly router = inject(Router);
+  private readonly route       = inject(ActivatedRoute);
+  private readonly router      = inject(Router);
   private readonly userService = inject(UserService);
+  private readonly notify      = inject(NotificationService);
 
-  readonly user = signal<User | null>(null);
-  readonly isLoading = signal(true);
+  readonly user         = signal<User | null>(null);
+  readonly isLoading    = signal(true);
   readonly errorMessage = signal('');
   readonly showEditModal = signal(false);
-  readonly showDeleteConfirm = signal(false);
-  readonly isDeleting = signal(false);
 
   readonly initials = computed(() => {
     const name = this.user()?.name ?? '';
@@ -54,46 +54,40 @@ export class UserDetailComponent implements OnInit {
       error: () => {
         this.errorMessage.set('Client not found or could not be loaded.');
         this.isLoading.set(false);
+        this.notify.error('Client not found or could not be loaded.', 'Load Error');
       },
     });
   }
 
-  goBack(): void {
-    this.router.navigate(['/users']);
-  }
+  goBack(): void { this.router.navigate(['/users']); }
 
-  openEdit(): void {
-    this.showEditModal.set(true);
-  }
+  openEdit(): void { this.showEditModal.set(true); }
 
   onUserUpdated(): void {
     this.showEditModal.set(false);
     const id = this.route.snapshot.paramMap.get('id');
     if (id) this.fetchUser(id);
+    // Toast fired inside UserUpdateComponent
   }
 
-  onEditCancelled(): void {
-    this.showEditModal.set(false);
-  }
+  onEditCancelled(): void { this.showEditModal.set(false); }
 
-  promptDelete(): void {
-    this.showDeleteConfirm.set(true);
-  }
+  /** Swal confirm dialog — no custom HTML modal needed */
+  async deleteUser(): Promise<void> {
+    const name = this.user()?.name ?? 'this client';
+    const confirmed = await this.notify.confirmDelete(name);
+    if (!confirmed) return;
 
-  cancelDelete(): void {
-    this.showDeleteConfirm.set(false);
-  }
-
-  confirmDelete(): void {
     const id = this.user()?._id;
     if (!id) return;
-    this.isDeleting.set(true);
+
     this.userService.remove(id).subscribe({
-      next: () => this.router.navigate(['/users']),
+      next: () => {
+        this.notify.success(`${name} has been deleted.`, 'Deleted');
+        this.router.navigate(['/users']);
+      },
       error: () => {
-        this.isDeleting.set(false);
-        this.errorMessage.set('Failed to delete client. Please try again.');
-        this.showDeleteConfirm.set(false);
+        this.notify.error('Failed to delete client. Please try again.', 'Delete Failed');
       },
     });
   }

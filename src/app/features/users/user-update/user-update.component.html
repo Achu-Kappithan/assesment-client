@@ -36,129 +36,123 @@
     </div>
 
     <!-- Form -->
-    <form [formGroup]="form" (ngSubmit)="onSubmit()" style="padding:24px; display:flex; flex-direction:column; gap:16px;">
+<form [formGroup]="form" (ngSubmit)="onSubmit()" style="padding:24px; display:flex; flex-direction:column; gap:16px;">
 
-      <!-- Error -->
-      @if (errorMessage()) {
-        <div style="display:flex; align-items:center; gap:8px; background:#fef2f2; border:1px solid #fecaca;
-                    color:#dc2626; padding:10px 14px; border-radius:8px; font-size:13px;">
-          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-            <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
-          </svg>
-          {{ errorMessage() }}
-        </div>
+  <!-- Name + Email -->
+  <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+    <div>
+      <label style="display:block; font-size:12px; font-weight:600; color:#374151; margin-bottom:6px;" for="u-name">
+        Full Name <span style="color:#dc2626;">*</span>
+      </label>
+      <input id="u-name" type="text" formControlName="name"
+        [style]="isInvalid('name') ? 'border-color:#f87171;' : ''"
+        style="width:100%; border:1px solid #e2e8f0; border-radius:8px; padding:8px 12px; font-size:13px;
+               color:#0f172a; font-family:inherit; outline:none; background:#fff; box-sizing:border-box;"
+        onfocus="this.style.borderColor='#2563eb'; this.style.boxShadow='0 0 0 3px rgba(37,99,235,0.1)'"
+        onblur="this.style.borderColor='#e2e8f0'; this.style.boxShadow='none'"/>
+      @if (isInvalid('name')) {
+        <p style="margin:5px 0 0; font-size:11px; color:#ef4444;">{{ getError('name') }}</p>
       }
-
-      <!-- Name + Email -->
-      <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
-        <div>
-          <label style="display:block; font-size:12px; font-weight:600; color:#374151; margin-bottom:6px;" for="u-name">
-            Full Name <span style="color:#dc2626;">*</span>
-          </label>
-          <input id="u-name" type="text" formControlName="name"
-            [style]="isInvalid('name') ? 'border-color:#f87171;' : ''"
-            style="width:100%; border:1px solid #e2e8f0; border-radius:8px; padding:8px 12px; font-size:13px;
-                   color:#0f172a; font-family:inherit; outline:none; background:#fff; box-sizing:border-box;"
-            onfocus="this.style.borderColor='#2563eb'; this.style.boxShadow='0 0 0 3px rgba(37,99,235,0.1)'"
-            onblur="this.style.borderColor='#e2e8f0'; this.style.boxShadow='none'"/>
-          @if (isInvalid('name')) {
-            <p style="margin:5px 0 0; font-size:11px; color:#ef4444;">Minimum 2 characters required.</p>
-          }
-        </div>
-        <div>
-          <label style="display:block; font-size:12px; font-weight:600; color:#374151; margin-bottom:6px;" for="u-email">
-            Email <span style="color:#dc2626;">*</span>
-          </label>
-          <input id="u-email" type="email" formControlName="email"
-            [style]="isInvalid('email') ? 'border-color:#f87171;' : ''"
-            style="width:100%; border:1px solid #e2e8f0; border-radius:8px; padding:8px 12px; font-size:13px;
-                   color:#0f172a; font-family:inherit; outline:none; background:#fff; box-sizing:border-box;"
-            onfocus="this.style.borderColor='#2563eb'; this.style.boxShadow='0 0 0 3px rgba(37,99,235,0.1)'"
-            onblur="this.style.borderColor='#e2e8f0'; this.style.boxShadow='none'"/>
-          @if (isInvalid('email')) {
-            <p style="margin:5px 0 0; font-size:11px; color:#ef4444;">Enter a valid email address.</p>
-          }
-        </div>
-      </div>
-
-      <!-- Phone + Age -->
-      <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
-        <div>
-          <label style="display:block; font-size:12px; font-weight:600; color:#374151; margin-bottom:6px;" for="u-phone">Phone</label>
-          <input id="u-phone" type="tel" formControlName="phone"
-            style="width:100%; border:1px solid #e2e8f0; border-radius:8px; padding:8px 12px; font-size:13px;
-                   color:#0f172a; font-family:inherit; outline:none; background:#fff; box-sizing:border-box;"
-            onfocus="this.style.borderColor='#2563eb'; this.style.boxShadow='0 0 0 3px rgba(37,99,235,0.1)'"
-            onblur="this.style.borderColor='#e2e8f0'; this.style.boxShadow='none'"/>
-        </div>
-        <div>
-          <label style="display:block; font-size:12px; font-weight:600; color:#374151; margin-bottom:6px;" for="u-age">Age</label>
-          <input id="u-age" type="number" formControlName="age" placeholder="e.g. 28" min="0" max="120"
-            [style]="isInvalid('age') ? 'border-color:#f87171;' : ''"
-            style="width:100%; border:1px solid #e2e8f0; border-radius:8px; padding:8px 12px; font-size:13px;
-                   color:#0f172a; font-family:inherit; outline:none; background:#fff; box-sizing:border-box;"
-            onfocus="this.style.borderColor='#2563eb'; this.style.boxShadow='0 0 0 3px rgba(37,99,235,0.1)'"
-            onblur="this.style.borderColor='#e2e8f0'; this.style.boxShadow='none'"/>
-          @if (isInvalid('age')) {
-            <p style="margin:5px 0 0; font-size:11px; color:#ef4444;">Age must be between 0 and 120.</p>
-          }
-        </div>
-      </div>
-
-
-
-      <!-- Address -->
-      <div>
-        <label style="display:block; font-size:12px; font-weight:600; color:#374151; margin-bottom:6px;" for="u-address">Address</label>
-        <input id="u-address" type="text" formControlName="address"
-          style="width:100%; border:1px solid #e2e8f0; border-radius:8px; padding:8px 12px; font-size:13px;
-                 color:#0f172a; font-family:inherit; outline:none; background:#fff; box-sizing:border-box;"
-          onfocus="this.style.borderColor='#2563eb'; this.style.boxShadow='0 0 0 3px rgba(37,99,235,0.1)'"
-          onblur="this.style.borderColor='#e2e8f0'; this.style.boxShadow='none'"/>
-      </div>
-
-      <!-- Status Toggle -->
-      <div style="display:flex; align-items:center; justify-content:space-between;
-                  background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; padding:12px 14px;">
-        <div>
-          <p style="margin:0; font-size:13px; font-weight:600; color:#374151;">Account Status</p>
-          <p style="margin:2px 0 0; font-size:12px; color:#94a3b8;">Mark client as active or inactive</p>
-        </div>
-        <label style="position:relative; display:inline-flex; align-items:center; cursor:pointer;">
-          <input type="checkbox" formControlName="isActive" id="u-is-active" class="toggle-input" style="position:absolute; opacity:0; width:0; height:0;"/>
-          <div class="toggle-track" style="width:40px; height:22px; background:#d1d5db; border-radius:11px;
-               position:relative; transition:background 0.2s;">
-            <div class="toggle-thumb" style="position:absolute; top:2px; left:2px; width:18px; height:18px;
-                 background:#fff; border-radius:50%; transition:transform 0.2s; box-shadow:0 1px 3px rgba(0,0,0,0.2);"></div>
-          </div>
-        </label>
-      </div>
-
-      <!-- Actions -->
-      <div style="display:flex; gap:10px; padding-top:4px; border-top:1px solid #f1f5f9; margin-top:4px;">
-        <button type="button" id="btn-cancel-update" (click)="onCancel()"
-          style="flex:1; background:#fff; color:#475569; border:1px solid #e2e8f0; border-radius:8px;
-                 padding:9px; font-size:13px; font-weight:600; cursor:pointer; font-family:inherit;"
-          onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='#fff'">
-          Cancel
-        </button>
-        <button type="submit" id="btn-submit-update" [disabled]="isSubmitting()"
-          style="flex:1; display:flex; align-items:center; justify-content:center; gap:6px;
-                 background:#2563eb; color:#fff; border:none; border-radius:8px;
-                 padding:9px; font-size:13px; font-weight:600; cursor:pointer; font-family:inherit;"
-          [style.opacity]="isSubmitting() ? '0.65' : '1'"
-          onmouseover="this.style.background='#1d4ed8'" onmouseout="this.style.background='#2563eb'">
-          @if (isSubmitting()) {
-            <svg style="animation:spin 0.8s linear infinite;" width="14" height="14" fill="none" viewBox="0 0 24 24">
-              <circle style="opacity:0.25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
-              <path style="opacity:0.75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
-            </svg>
-            Saving…
-          } @else {
-            Update Client
-          }
-        </button>
-      </div>
-    </form>
+    </div>
+    <div>
+      <label style="display:block; font-size:12px; font-weight:600; color:#374151; margin-bottom:6px;" for="u-email">
+        Email <span style="color:#dc2626;">*</span>
+      </label>
+      <input id="u-email" type="email" formControlName="email"
+        [style]="isInvalid('email') ? 'border-color:#f87171;' : ''"
+        style="width:100%; border:1px solid #e2e8f0; border-radius:8px; padding:8px 12px; font-size:13px;
+               color:#0f172a; font-family:inherit; outline:none; background:#fff; box-sizing:border-box;"
+        onfocus="this.style.borderColor='#2563eb'; this.style.boxShadow='0 0 0 3px rgba(37,99,235,0.1)'"
+        onblur="this.style.borderColor='#e2e8f0'; this.style.boxShadow='none'"/>
+      @if (isInvalid('email')) {
+        <p style="margin:5px 0 0; font-size:11px; color:#ef4444;">{{ getError('email') }}</p>
+      }
+    </div>
   </div>
+
+  <!-- Phone + Age -->
+  <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+    <div>
+      <label style="display:block; font-size:12px; font-weight:600; color:#374151; margin-bottom:6px;" for="u-phone">Phone</label>
+      <input id="u-phone" type="tel" formControlName="phone"
+        [style]="isInvalid('phone') ? 'border-color:#f87171;' : ''"
+        style="width:100%; border:1px solid #e2e8f0; border-radius:8px; padding:8px 12px; font-size:13px;
+               color:#0f172a; font-family:inherit; outline:none; background:#fff; box-sizing:border-box;"
+        onfocus="this.style.borderColor='#2563eb'; this.style.boxShadow='0 0 0 3px rgba(37,99,235,0.1)'"
+        onblur="this.style.borderColor='#e2e8f0'; this.style.boxShadow='none'"/>
+      @if (isInvalid('phone')) {
+        <p style="margin:5px 0 0; font-size:11px; color:#ef4444;">{{ getError('phone') }}</p>
+      }
+    </div>
+    <div>
+      <label style="display:block; font-size:12px; font-weight:600; color:#374151; margin-bottom:6px;" for="u-age">Age</label>
+      <input id="u-age" type="number" formControlName="age" placeholder="e.g. 28" min="0" max="120"
+        [style]="isInvalid('age') ? 'border-color:#f87171;' : ''"
+        style="width:100%; border:1px solid #e2e8f0; border-radius:8px; padding:8px 12px; font-size:13px;
+               color:#0f172a; font-family:inherit; outline:none; background:#fff; box-sizing:border-box;"
+        onfocus="this.style.borderColor='#2563eb'; this.style.boxShadow='0 0 0 3px rgba(37,99,235,0.1)'"
+        onblur="this.style.borderColor='#e2e8f0'; this.style.boxShadow='none'"/>
+      @if (isInvalid('age')) {
+        <p style="margin:5px 0 0; font-size:11px; color:#ef4444;">{{ getError('age') }}</p>
+      }
+    </div>
+  </div>
+
+  <!-- Address -->
+  <div>
+    <label style="display:block; font-size:12px; font-weight:600; color:#374151; margin-bottom:6px;" for="u-address">Address</label>
+    <input id="u-address" type="text" formControlName="address"
+      [style]="isInvalid('address') ? 'border-color:#f87171;' : ''"
+      style="width:100%; border:1px solid #e2e8f0; border-radius:8px; padding:8px 12px; font-size:13px;
+             color:#0f172a; font-family:inherit; outline:none; background:#fff; box-sizing:border-box;"
+      onfocus="this.style.borderColor='#2563eb'; this.style.boxShadow='0 0 0 3px rgba(37,99,235,0.1)'"
+      onblur="this.style.borderColor='#e2e8f0'; this.style.boxShadow='none'"/>
+    @if (isInvalid('address')) {
+      <p style="margin:5px 0 0; font-size:11px; color:#ef4444;">{{ getError('address') }}</p>
+    }
+  </div>
+
+  <!-- Status Toggle -->
+  <div style="display:flex; align-items:center; justify-content:space-between;
+              background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; padding:12px 14px;">
+    <div>
+      <p style="margin:0; font-size:13px; font-weight:600; color:#374151;">Account Status</p>
+      <p style="margin:2px 0 0; font-size:12px; color:#94a3b8;">Mark client as active or inactive</p>
+    </div>
+    <label style="position:relative; display:inline-flex; align-items:center; cursor:pointer;">
+      <input type="checkbox" formControlName="isActive" id="u-is-active" class="toggle-input" style="position:absolute; opacity:0; width:0; height:0;"/>
+      <div class="toggle-track" style="width:40px; height:22px; background:#d1d5db; border-radius:11px;
+               position:relative; transition:background 0.2s;">
+        <div class="toggle-thumb" style="position:absolute; top:2px; left:2px; width:18px; height:18px;
+                   background:#fff; border-radius:50%; transition:transform 0.2s; box-shadow:0 1px 3px rgba(0,0,0,0.2);"></div>
+      </div>
+    </label>
+  </div>
+
+  <!-- Actions -->
+  <div style="display:flex; gap:10px; padding-top:4px; border-top:1px solid #f1f5f9; margin-top:4px;">
+    <button type="button" id="btn-cancel-update" (click)="onCancel()"
+      style="flex:1; background:#fff; color:#475569; border:1px solid #e2e8f0; border-radius:8px;
+             padding:9px; font-size:13px; font-weight:600; cursor:pointer; font-family:inherit;"
+      onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='#fff'">
+      Cancel
+    </button>
+    <button type="submit" id="btn-submit-update" [disabled]="isSubmitting()"
+      style="flex:1; display:flex; align-items:center; justify-content:center; gap:6px;
+             background:#2563eb; color:#fff; border:none; border-radius:8px;
+             padding:9px; font-size:13px; font-weight:600; cursor:pointer; font-family:inherit;"
+      [style.opacity]="isSubmitting() ? '0.65' : '1'"
+      onmouseover="this.style.background='#1d4ed8'" onmouseout="this.style.background='#2563eb'">
+      @if (isSubmitting()) {
+        <svg style="animation:spin 0.8s linear infinite;" width="14" height="14" fill="none" viewBox="0 0 24 24">
+          <circle style="opacity:0.25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
+          <path style="opacity:0.75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
+        </svg>
+        Saving…
+      } @else {
+        Update Client
+      }
+    </button>
+  </div>
+</form>  </div>
 </div>

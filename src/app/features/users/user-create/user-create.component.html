@@ -91,6 +91,9 @@
                    color:#0f172a; font-family:inherit; outline:none; background:#fff; box-sizing:border-box;"
             onfocus="this.style.borderColor='#2563eb'; this.style.boxShadow='0 0 0 3px rgba(37,99,235,0.1)'"
             onblur="this.style.borderColor='#e2e8f0'; this.style.boxShadow='none'"/>
+            @if (isInvalid('phone')) {
+    <p style="margin:5px 0 0; font-size:11px; color:#ef4444;">Enter a valid phone number (e.g. +1 555-000-0000).</p>
+  }
         </div>
         <div>
           <label style="display:block; font-size:12px; font-weight:600; color:#374151; margin-bottom:6px;" for="c-age">Age</label>
@@ -115,6 +118,9 @@
                  color:#0f172a; font-family:inherit; outline:none; background:#fff; box-sizing:border-box;"
           onfocus="this.style.borderColor='#2563eb'; this.style.boxShadow='0 0 0 3px rgba(37,99,235,0.1)'"
           onblur="this.style.borderColor='#e2e8f0'; this.style.boxShadow='none'"/>
+          @if (isInvalid('address')) {
+    <p style="margin:5px 0 0; font-size:11px; color:#ef4444;">Maximum 300 characters allowed.</p>
+  }
       </div>
 
       <!-- Footer -->
